@@ -1,0 +1,27 @@
+$ pnpm run lint
+
+> react-template@0.0.0 lint /data/chats/03ssld/workspace/react_template
+> eslint ./src --quiet
+
+
+/data/chats/03ssld/workspace/react_template/src/api/recipeService.js
+   92:31  error  '大' is not defined                no-undef
+  109:30  error  '小' is not defined                no-undef
+  110:32  error  '少々' is not defined               no-undef
+  111:32  error  '適量' is not defined               no-undef
+  131:30  error  '小' is not defined                no-undef
+  132:31  error  '少々' is not defined               no-undef
+  150:31  error  '大' is not defined                no-undef
+  151:32  error  '大' is not defined                no-undef
+  152:31  error  '小' is not defined                no-undef
+  153:32  error  '小' is not defined                no-undef
+  170:31  error  '大' is not defined                no-undef
+  231:26  error  'RAKUTEN_API_KEY' is not defined  no-undef
+  272:26  error  'RAKUTEN_API_KEY' is not defined  no-undef
+  307:26  error  'RAKUTEN_API_KEY' is not defined  no-undef
+  337:26  error  'RAKUTEN_API_KEY' is not defined  no-undef
+  370:26  error  'RAKUTEN_API_KEY' is not defined  no-undef
+
+✖ 16 problems (16 errors, 0 warnings)
+
+ ELIFECYCLE  Command failed with exit code 1.

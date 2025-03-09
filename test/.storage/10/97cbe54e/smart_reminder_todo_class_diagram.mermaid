@@ -1,0 +1,145 @@
+classDiagram
+    User "1" -- "*" Task: creates
+    User "1" -- "*" LearningContent: owns
+    Task <|-- RegularTask: extends
+    Task <|-- LearningTask: extends
+    LearningTask "1" -- "*" LearningContent: contains
+    LearningTask "1" -- "*" LearningRecord: has
+    LearningTask "1" -- "*" ReminderSchedule: generates
+    LearningContent "1" -- "*" LearningRecord: tracks
+    Notification "*" -- "1" User: sent to
+    Notification <|-- TaskNotification: extends
+    Notification <|-- LearningNotification: extends
+    LearningNotification -- ReminderSchedule: based on
+    
+    class User {
+        +String id
+        +String email
+        +String name
+        +String password
+        +Date createdAt
+        +Date updatedAt
+        +Object settings
+        +Array fcmTokens
+        +register(email, password, name): User
+        +login(email, password): Token
+        +updateProfile(userData): User
+        +updateSettings(settings): User
+    }
+    
+    class Task {
+        <<abstract>>
+        +String id
+        +String userId
+        +String title
+        +String description
+        +String category
+        +Array tags
+        +Number priority
+        +Date dueDate
+        +Boolean isCompleted
+        +Date completedAt
+        +Date createdAt
+        +Date updatedAt
+        +create(taskData): Task
+        +update(taskData): Task
+        +delete(): Boolean
+        +markAsComplete(): Task
+        +markAsIncomplete(): Task
+    }
+    
+    class RegularTask {
+        +Boolean isRecurring
+        +Object recurringPattern
+        +createRecurringInstance(): RegularTask
+    }
+    
+    class LearningTask {
+        +String learningType
+        +Number initialDifficulty
+        +Array contentIds
+        +createContent(contentData): LearningContent
+        +addContent(contentId): LearningTask
+        +removeContent(contentId): LearningTask
+        +generateReminders(): Array~ReminderSchedule~
+    }
+    
+    class LearningContent {
+        +String id
+        +String userId
+        +String taskId
+        +String question
+        +String answer
+        +Array media
+        +Number averageUnderstanding
+        +Date createdAt
+        +Date updatedAt
+        +create(contentData): LearningContent
+        +update(contentData): LearningContent
+        +delete(): Boolean
+        +calculateAverageUnderstanding(): Number
+    }
+    
+    class LearningRecord {
+        +String id
+        +String userId
+        +String contentId
+        +String taskId
+        +Number understandingLevel
+        +Date studiedAt
+        +Number timeSpent
+        +Number previousInterval
+        +Number easeFactor
+        +create(recordData): LearningRecord
+        +update(recordData): LearningRecord
+    }
+    
+    class ReminderSchedule {
+        +String id
+        +String userId
+        +String taskId
+        +String contentId
+        +Date scheduledAt
+        +Boolean isCompleted
+        +Number interval
+        +Number easeFactor
+        +Date createdAt
+        +create(scheduleData): ReminderSchedule
+        +markAsCompleted(): ReminderSchedule
+        +reschedule(newDate): ReminderSchedule
+    }
+    
+    class Notification {
+        <<abstract>>
+        +String id
+        +String userId
+        +String title
+        +String message
+        +Boolean isRead
+        +Date createdAt
+        +Date readAt
+        +create(notificationData): Notification
+        +markAsRead(): Notification
+        +delete(): Boolean
+    }
+    
+    class TaskNotification {
+        +String taskId
+        +sendTaskNotification(userId, taskId, message): TaskNotification
+    }
+    
+    class LearningNotification {
+        +String taskId
+        +String contentId
+        +String reminderId
+        +sendLearningReminder(userId, taskId, contentId, reminderId): LearningNotification
+    }
+    
+    class SpacedRepetitionAlgorithm {
+        <<service>>
+        +INITIAL_EASE_FACTOR: Number
+        +MINIMUM_EASE_FACTOR: Number
+        +calculateNextInterval(understandingLevel, previousInterval, easeFactor): Object
+        +calculateEaseFactor(understandingLevel, previousEase): Number
+        +generateNextReminder(learningRecord): Object
+    }

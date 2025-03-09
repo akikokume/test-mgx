@@ -1,0 +1,54 @@
+$ cd react_template && pnpm install
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +393
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 393, reused 0, downloaded 0, added 0
+Progress: resolved 393, reused 25, downloaded 0, added 0
+
+   ╭──────────────────────────────────────────────────────────────────╮
+   │                                                                  │
+   │                Update available! 8.10.2 → 10.6.1.                │
+   │   Changelog: https://github.com/pnpm/pnpm/releases/tag/v10.6.1   │
+   │     Run "corepack prepare pnpm@10.6.1 --activate" to update.     │
+   │                                                                  │
+   │      Follow @pnpmjs for updates: https://twitter.com/pnpmjs      │
+   │                                                                  │
+   ╰──────────────────────────────────────────────────────────────────╯
+
+Progress: resolved 393, reused 41, downloaded 16, added 6
+Progress: resolved 393, reused 41, downloaded 34, added 25
+Progress: resolved 393, reused 41, downloaded 44, added 36
+Progress: resolved 393, reused 41, downloaded 50, added 41
+Progress: resolved 393, reused 41, downloaded 57, added 49
+Progress: resolved 393, reused 41, downloaded 75, added 63
+Progress: resolved 393, reused 41, downloaded 92, added 82
+Progress: resolved 393, reused 41, downloaded 106, added 97
+Progress: resolved 393, reused 41, downloaded 121, added 114
+Progress: resolved 393, reused 41, downloaded 153, added 141
+Progress: resolved 393, reused 41, downloaded 193, added 185
+Progress: resolved 393, reused 41, downloaded 219, added 209
+Progress: resolved 393, reused 41, downloaded 248, added 234
+Progress: resolved 393, reused 41, downloaded 275, added 262
+Progress: resolved 393, reused 41, downloaded 298, added 286
+Progress: resolved 393, reused 41, downloaded 329, added 318
+Progress: resolved 393, reused 41, downloaded 346, added 343
+Progress: resolved 393, reused 41, downloaded 346, added 346
+Progress: resolved 393, reused 41, downloaded 349, added 348
+Progress: resolved 393, reused 41, downloaded 349, added 349
+Progress: resolved 393, reused 41, downloaded 350, added 349
+Progress: resolved 393, reused 41, downloaded 351, added 350
+Progress: resolved 393, reused 41, downloaded 351, added 351
+Progress: resolved 393, reused 41, downloaded 352, added 351
+Progress: resolved 393, reused 41, downloaded 352, added 352
+Progress: resolved 393, reused 41, downloaded 352, added 352, done
+.../esbuild@0.21.5/node_modules/esbuild postinstall$ node install.js
+.../esbuild@0.21.5/node_modules/esbuild postinstall: Done
+
+Done in 46.1s
+$ pnpm run lint
+
+
+> react-template@0.0.0 lint /data/chats/xxqv0/workspace/react_template
+> eslint ./src --quiet
+

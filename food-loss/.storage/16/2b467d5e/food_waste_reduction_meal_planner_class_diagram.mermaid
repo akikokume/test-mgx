@@ -1,0 +1,162 @@
+classDiagram
+    class User {
+        +String id
+        +String name
+        +String email
+        +String password
+        +List~FamilyMember~ familyMembers
+        +List~Preference~ preferences
+        +register(name: String, email: String, password: String): User
+        +login(email: String, password: String): AuthToken
+        +updateProfile(profile: UserProfile): User
+        +getPreferences(): List~Preference~
+        +addPreference(preference: Preference): void
+    }
+
+    class FamilyMember {
+        +String id
+        +String name
+        +int age
+        +String relationship
+        +List~Preference~ preferences
+    }
+
+    class Preference {
+        +String id
+        +PreferenceType type
+        +String value
+        +int priority
+    }
+
+    class Ingredient {
+        +String id
+        +String name
+        +String category
+        +String unit
+        +String storageLocation
+        +int standardShelfLife
+        +getById(id: String): Ingredient
+        +search(query: String): List~Ingredient~
+        +getSubstitutes(ingredientId: String): List~Ingredient~
+    }
+
+    class UserIngredient {
+        +String id
+        +String userId
+        +String ingredientId
+        +Date purchaseDate
+        +Date expiryDate
+        +float quantity
+        +String storageLocation
+        +add(userId: String, ingredient: UserIngredient): UserIngredient
+        +update(id: String, updates: UserIngredientUpdate): UserIngredient
+        +delete(id: String): void
+        +getByUserId(userId: String): List~UserIngredient~
+        +getExpiringSoon(userId: String, days: int): List~UserIngredient~
+    }
+
+    class Recipe {
+        +String id
+        +String name
+        +String category
+        +int cookingTime
+        +String difficulty
+        +String imageUrl
+        +String source
+        +List~RecipeIngredient~ ingredients
+        +List~String~ instructions
+        +NutritionInfo nutritionInfo
+        +getById(id: String): Recipe
+        +search(query: SearchQuery): List~Recipe~
+        +getPopular(): List~Recipe~
+        +getByCategoryAndIngredients(category: String, ingredients: List~String~): List~Recipe~
+    }
+
+    class RecipeIngredient {
+        +String ingredientId
+        +String name
+        +float quantity
+        +String unit
+        +boolean isSubstitutable
+        +List~String~ possibleSubstitutes
+    }
+
+    class MealPlan {
+        +String id
+        +String userId
+        +Date startDate
+        +Date endDate
+        +List~MealEntry~ meals
+        +create(userId: String, options: MealPlanOptions): MealPlan
+        +update(id: String, updates: MealPlanUpdate): MealPlan
+        +delete(id: String): void
+        +getByUserId(userId: String): List~MealPlan~
+        +getCurrentPlan(userId: String): MealPlan
+        +optimizePlan(id: String): MealPlan
+    }
+
+    class MealEntry {
+        +String id
+        +Date date
+        +MealType type
+        +String recipeId
+        +List~String~ customIngredients
+        +int servings
+        +addRecipe(planId: String, entry: MealEntry): MealEntry
+        +updateRecipe(id: String, updates: MealEntryUpdate): MealEntry
+        +removeRecipe(id: String): void
+    }
+
+    class ShoppingList {
+        +String id
+        +String userId
+        +Date createdDate
+        +List~ShoppingItem~ items
+        +float budgetLimit
+        +String notes
+        +generate(userId: String, mealPlanId: String): ShoppingList
+        +update(id: String, updates: ShoppingListUpdate): ShoppingList
+        +addItem(listId: String, item: ShoppingItem): ShoppingList
+        +removeItem(listId: String, itemId: String): ShoppingList
+        +markItemPurchased(listId: String, itemId: String, purchased: boolean): ShoppingList
+    }
+
+    class ShoppingItem {
+        +String id
+        +String ingredientId
+        +String name
+        +float quantity
+        +String unit
+        +String category
+        +boolean purchased
+        +float estimatedPrice
+    }
+
+    class ApiService {
+        +fetchRecipesByIngredients(ingredients: List~String~): List~Recipe~
+        +fetchRecipeById(id: String): Recipe
+        +fetchPopularRecipes(): List~Recipe~
+        +fetchRecipesByCategory(category: String): List~Recipe~
+        +searchRecipes(query: String): List~Recipe~
+    }
+
+    class WastageReductionAlgorithm {
+        +assignExpiryScores(ingredients: List~UserIngredient~): Map~String, float~
+        +findOptimalRecipeCombination(ingredients: List~UserIngredient~, preferences: List~Preference~): List~Recipe~
+        +calculateIngredientUsageEfficiency(mealPlan: MealPlan): float
+        +suggestIngredientSubstitutions(recipe: Recipe, availableIngredients: List~UserIngredient~): Map~String, String~
+        +optimizeMealPlan(mealPlan: MealPlan, userIngredients: List~UserIngredient~): MealPlan
+    }
+
+    User "1" -- "*" FamilyMember : has
+    User "1" -- "*" Preference : has
+    FamilyMember "1" -- "*" Preference : has
+    User "1" -- "*" UserIngredient : owns
+    UserIngredient "*" -- "1" Ingredient : references
+    Recipe "1" -- "*" RecipeIngredient : contains
+    User "1" -- "*" MealPlan : creates
+    MealPlan "1" -- "*" MealEntry : contains
+    MealEntry "*" -- "1" Recipe : references
+    User "1" -- "*" ShoppingList : owns
+    ShoppingList "1" -- "*" ShoppingItem : contains
+    ShoppingItem "*" -- "1" Ingredient : references

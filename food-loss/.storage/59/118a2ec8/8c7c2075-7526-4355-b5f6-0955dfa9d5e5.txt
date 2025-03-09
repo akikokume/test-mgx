@@ -1,0 +1,24 @@
+$ cd react_template
+$ pnpm i react-redux @reduxjs/toolkit react-router-dom axios && pnpm run lint
+
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Progress: resolved 23, reused 19, downloaded 1, added 0
+Progress: resolved 133, reused 129, downloaded 2, added 0
+Progress: resolved 439, reused 381, downloaded 8, added 0
+Packages: +33
++++++++++++++++++++++++++++++++++
+Progress: resolved 463, reused 393, downloaded 31, added 30
+Progress: resolved 463, reused 393, downloaded 32, added 32
+Progress: resolved 463, reused 393, downloaded 33, added 33, done
+
+dependencies:
++ @reduxjs/toolkit 2.6.1
++ axios 1.8.2
++ react-redux 9.2.0
++ react-router-dom 7.3.0
+
+Done in 7.7s
+
+> react-template@0.0.0 lint /data/chats/03ssld/workspace/react_template
+> eslint ./src --quiet
+

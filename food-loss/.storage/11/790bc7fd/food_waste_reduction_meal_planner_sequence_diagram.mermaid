@@ -1,0 +1,105 @@
+sequenceDiagram
+    participant User
+    participant UI as UserInterface
+    participant Auth as AuthController
+    participant Ingredient as IngredientController
+    participant Recipe as RecipeController
+    participant MealPlan as MealPlanController
+    participant ShoppingList as ShoppingListController
+    participant WRAL as WastageReductionAlgorithm
+    participant API as ApiService
+    participant DB as Database
+    
+    %% ユーザー登録・ログインフロー
+    User->>UI: アカウント登録
+    UI->>Auth: register(name, email, password)
+    Auth->>DB: saveUser(userObject)
+    DB-->>Auth: userId
+    Auth-->>UI: 登録成功レスポンス
+    UI-->>User: 登録完了画面表示
+    
+    User->>UI: ログイン
+    UI->>Auth: login(email, password)
+    Auth->>DB: verifyCredentials(email, password)
+    DB-->>Auth: userData
+    Auth-->>UI: authToken
+    UI-->>User: ホーム画面表示
+    
+    %% 食材管理フロー
+    User->>UI: 冷蔵庫の食材を入力
+    UI->>Ingredient: addUserIngredient(ingredientData)
+    Ingredient->>DB: saveUserIngredient(ingredientObject)
+    DB-->>Ingredient: ingredientId
+    Ingredient-->>UI: 食材追加完了
+    UI-->>User: 更新された冷蔵庫内容表示
+    
+    %% 自動献立作成フロー
+    User->>UI: 献立自動作成リクエスト
+    UI->>MealPlan: createMealPlan(userId, options)
+    MealPlan->>Ingredient: getUserIngredients(userId)
+    Ingredient->>DB: queryUserIngredients(userId)
+    DB-->>Ingredient: userIngredients
+    Ingredient-->>MealPlan: userIngredients
+    MealPlan->>Auth: getUserPreferences(userId)
+    Auth->>DB: queryUserPreferences(userId)
+    DB-->>Auth: preferences
+    Auth-->>MealPlan: preferences
+    MealPlan->>WRAL: findOptimalRecipeCombination(userIngredients, preferences)
+    WRAL->>API: fetchRecipesByIngredients(ingredients)
+    API-->>WRAL: candidateRecipes
+    WRAL->>WRAL: calculateExpiryScores(userIngredients)
+    WRAL->>WRAL: optimizeRecipeSelection(candidateRecipes, expiryScores)
+    WRAL-->>MealPlan: optimizedRecipes
+    MealPlan->>DB: saveMealPlan(mealPlanObject)
+    DB-->>MealPlan: mealPlanId
+    MealPlan-->>UI: 生成された献立プラン
+    UI-->>User: 献立カレンダー表示
+    
+    %% 献立詳細確認フロー
+    User->>UI: 献立の詳細を表示
+    UI->>Recipe: getRecipeDetails(recipeId)
+    Recipe->>API: fetchRecipeById(recipeId)
+    API-->>Recipe: recipeDetails
+    Recipe-->>UI: レシピ詳細情報
+    UI-->>User: レシピ詳細画面表示
+    
+    %% 献立カスタマイズフロー
+    User->>UI: 献立のレシピを変更
+    UI->>MealPlan: updateMealEntry(entryId, newRecipeId)
+    MealPlan->>DB: updateMealEntryInDB(entryId, newRecipeId)
+    DB-->>MealPlan: 更新完了
+    MealPlan->>WRAL: optimizeMealPlan(updatedMealPlan, userIngredients)
+    WRAL-->>MealPlan: 再最適化された献立
+    MealPlan-->>UI: 更新された献立プラン
+    UI-->>User: 更新された献立カレンダー表示
+    
+    %% 買い物リスト生成フロー
+    User->>UI: 買い物リスト生成リクエスト
+    UI->>ShoppingList: generateShoppingList(userId, mealPlanId)
+    ShoppingList->>MealPlan: getMealPlanDetails(mealPlanId)
+    MealPlan->>DB: queryMealPlan(mealPlanId)
+    DB-->>MealPlan: mealPlanWithRecipes
+    MealPlan-->>ShoppingList: mealPlanDetails
+    ShoppingList->>Ingredient: getUserIngredients(userId)
+    Ingredient->>DB: queryUserIngredients(userId)
+    DB-->>Ingredient: userIngredients
+    Ingredient-->>ShoppingList: userIngredients
+    ShoppingList->>ShoppingList: calculateRequiredIngredients(mealPlanDetails)
+    ShoppingList->>ShoppingList: subtractExistingIngredients(requiredIngredients, userIngredients)
+    ShoppingList->>ShoppingList: categorizeShoppingItems(shoppingItems)
+    ShoppingList->>DB: saveShoppingList(shoppingListObject)
+    DB-->>ShoppingList: shoppingListId
+    ShoppingList-->>UI: 生成された買い物リスト
+    UI-->>User: カテゴリ別買い物リスト表示
+    
+    %% 買い物完了処理フロー
+    User->>UI: 買い物完了を報告
+    UI->>ShoppingList: markItemsAsPurchased(listId, itemIds)
+    ShoppingList->>DB: updateShoppingItems(listId, itemIds)
+    DB-->>ShoppingList: 更新完了
+    ShoppingList->>Ingredient: addNewIngredients(userId, purchasedItems)
+    Ingredient->>DB: saveMultipleUserIngredients(ingredientObjects)
+    DB-->>Ingredient: ingredientIds
+    Ingredient-->>ShoppingList: 食材追加完了
+    ShoppingList-->>UI: 買い物リスト更新完了
+    UI-->>User: 更新された冷蔵庫・買い物リスト表示

@@ -1,0 +1,75 @@
+sequenceDiagram
+    actor User
+    participant App as Frontend App
+    participant API as Backend API
+    participant Auth as Firebase Auth
+    participant DB as MongoDB
+    participant FCM as Firebase Cloud Messaging
+    participant SRA as SpacedRepetitionAlgorithm
+    
+    %% ユーザー登録・ログインフロー
+    User->>App: ユーザー登録/ログイン情報入力
+    App->>API: 認証リクエスト送信
+    API->>Auth: 認証処理要求
+    Auth-->>API: 認証トークン返却
+    API->>DB: ユーザー情報保存/取得
+    DB-->>API: 保存確認/ユーザーデータ
+    API-->>App: 認証完了・ユーザーデータ返却
+    App-->>User: ダッシュボード表示
+    
+    %% 学習タスク作成フロー
+    User->>App: 学習タスク作成
+    App->>App: タスクフォーム表示
+    User->>App: タスク詳細・学習コンテンツ入力
+    App->>API: タスク作成リクエスト
+    API->>DB: タスクデータ保存
+    DB-->>API: 保存確認
+    API->>SRA: リマインダースケジュール計算要求
+    SRA-->>API: 初期リマインダースケジュール
+    API->>DB: リマインダースケジュール保存
+    DB-->>API: 保存確認
+    API-->>App: タスク作成完了レスポンス
+    App-->>User: 完了通知・タスク表示
+    
+    %% リマインダー生成・通知フロー
+    Note over API: スケジュールされたジョブ実行
+    API->>DB: 本日のリマインダー取得
+    DB-->>API: リマインダーリスト
+    loop 各リマインダー
+        API->>FCM: 通知送信
+        FCM-->>User: プッシュ通知受信
+    end
+    
+    %% 学習セッション実行フロー
+    User->>App: 学習リマインダーをタップ
+    App->>API: 学習コンテンツ取得
+    API->>DB: コンテンツデータ取得
+    DB-->>API: コンテンツデータ
+    API-->>App: 学習コンテンツ返却
+    App-->>User: 学習カード表示
+    User->>App: 理解度評価（0-5）選択
+    App->>API: 学習記録送信
+    API->>DB: 学習記録保存
+    DB-->>API: 保存確認
+    API->>SRA: 次回リマインドタイミング計算
+    SRA-->>API: 新しいリマインドスケジュール
+    API->>DB: リマインドスケジュール更新
+    DB-->>API: 更新確認
+    API-->>App: 学習セッション結果返却
+    App-->>User: 完了メッセージ・次回予定表示
+    
+    %% 通常タスク管理フロー
+    User->>App: 通常タスク作成
+    App->>API: タスク保存リクエスト
+    API->>DB: タスクデータ保存
+    DB-->>API: 保存確認
+    API-->>App: 保存完了通知
+    App-->>User: タスク一覧更新表示
+    
+    %% タスク完了フロー
+    User->>App: タスク完了マーク
+    App->>API: タスク完了リクエスト
+    API->>DB: タスク状態更新
+    DB-->>API: 更新確認
+    API-->>App: 完了確認レスポンス
+    App-->>User: 完了効果表示・タスク一覧更新
